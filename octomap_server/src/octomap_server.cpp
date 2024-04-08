@@ -457,7 +457,7 @@ void OctomapServer::insertCloudCallback(const PointCloud2::ConstSharedPtr cloud)
       tf2::transformToEigen(base_to_world_transform_stamped.transform).matrix().cast<float>();
 
     // transform pointcloud from sensor frame to fixed robot frame
-    pcl::transformPointCloud(pc, pc, sensor_to_base);
+    pcl_ros::transformPointCloud(pc, pc, sensor_to_base);
     pass_x.setInputCloud(pc.makeShared());
     pass_x.filter(pc);
     pass_y.setInputCloud(pc.makeShared());
@@ -467,11 +467,11 @@ void OctomapServer::insertCloudCallback(const PointCloud2::ConstSharedPtr cloud)
     filterGroundPlane(pc, pc_ground, pc_nonground);
 
     // transform clouds to world frame for insertion
-    pcl::transformPointCloud(pc_ground, pc_ground, base_to_world);
-    pcl::transformPointCloud(pc_nonground, pc_nonground, base_to_world);
+    pcl_ros::transformPointCloud(pc_ground, pc_ground, base_to_world);
+    pcl_ros::transformPointCloud(pc_nonground, pc_nonground, base_to_world);
   } else {
     // directly transform to map frame:
-    pcl::transformPointCloud(pc, pc, sensor_to_world);
+    pcl_ros::transformPointCloud(pc, pc, sensor_to_world);
 
     // just filter height range:
     pass_x.setInputCloud(pc.makeShared());
