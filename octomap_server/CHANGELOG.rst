@@ -2,6 +2,11 @@
 Changelog for package octomap_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Switch to the system-provided octomap library. (`#134 <https://github.com/octomap/octomap_mapping/issues/134>`_)
+* Contributors: Chris Lalancette
+
 2.2.0 (2024-05-25)
 ------------------
 * Fix: Include missing tf2 geometry_msgs (`#128 <https://github.com/octomap/octomap_mapping/issues/128>`_)
