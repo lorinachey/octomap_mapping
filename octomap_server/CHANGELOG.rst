@@ -2,8 +2,8 @@
 Changelog for package octomap_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2024-07-02)
+------------------
 * Switch to the system-provided octomap library. (`#134 <https://github.com/octomap/octomap_mapping/issues/134>`_)
 * Contributors: Chris Lalancette
 
