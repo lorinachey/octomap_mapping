@@ -16,6 +16,12 @@
 		<!-- maximum range to integrate (speedup!) -->
 		<param name="sensor_model.max_range" value="5.0" />
 
+		<!-- sensor model parameters -->
+		<param name="sensor_model.hit" value="0.8" />  <!-- Increased hit probability -->
+		<param name="sensor_model.miss" value="0.2" />  <!-- Decreased miss probability -->
+		<param name="sensor_model.min" value="0.12" />  <!-- Kept default min threshold -->
+		<param name="sensor_model.max" value="0.97" />  <!-- Kept default max threshold -->
+
 		<!-- data source to integrate (PointCloud2) -->
 		<remap from="cloud_in" to="/front_3d_lidar/lidar_points" />
 	</node>
