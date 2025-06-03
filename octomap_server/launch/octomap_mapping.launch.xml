@@ -18,7 +18,7 @@
 
 		<!-- sensor model parameters -->
 		<param name="sensor_model.hit" value="0.8" />  <!-- Increased hit probability -->
-		<param name="sensor_model.miss" value="0.2" />  <!-- Decreased miss probability -->
+		<param name="sensor_model.miss" value="0.4" />  <!-- Decreased miss probability -->
 		<param name="sensor_model.min" value="0.12" />  <!-- Kept default min threshold -->
 		<param name="sensor_model.max" value="0.97" />  <!-- Kept default max threshold -->
 
