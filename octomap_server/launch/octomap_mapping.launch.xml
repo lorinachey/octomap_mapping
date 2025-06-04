@@ -16,7 +16,7 @@
 		<!-- maximum range to integrate (speedup!) -->
 		<param name="sensor_model.max_range" value="5.0" />
 
-		<param name="use_sim_time" value="True" />
+		<param name="use_sim_time" value="true" />
 
 		<!-- sensor model parameters -->
 		<param name="sensor_model.hit" value="0.75" />
@@ -35,6 +35,9 @@
 		<!-- Initialize octree with these bounds -->
 		<param name="min_x_size" value="20.0" />
 		<param name="min_y_size" value="20.0" />
+
+		<!-- disable ground plane filtering -->
+		<param name="filter_ground_plane" value="false" />
 
 		<!-- data source to integrate (PointCloud2) -->
 		<remap from="cloud_in" to="/front_3d_lidar/lidar_points" />
