@@ -19,22 +19,10 @@
 		<param name="use_sim_time" value="true" />
 
 		<!-- sensor model parameters -->
-		<param name="sensor_model.hit" value="0.75" />
+		<param name="sensor_model.hit" value="0.7" />
 		<param name="sensor_model.miss" value="0.4" />
-		<param name="sensor_model.min" value="0.05" />
+		<param name="sensor_model.min" value="0.12" />
 		<param name="sensor_model.max" value="0.97" /> 
-
-		<!-- Point cloud bounds to limit octomap size -->
-		<param name="point_cloud_min_x" value="-10.0" />
-		<param name="point_cloud_max_x" value="10.0" />
-		<param name="point_cloud_min_y" value="-10.0" />
-		<param name="point_cloud_max_y" value="10.0" />
-		<param name="point_cloud_min_z" value="-10.0" />
-		<param name="point_cloud_max_z" value="10.0" />
-
-		<!-- Initialize octree with these bounds -->
-		<param name="min_x_size" value="20.0" />
-		<param name="min_y_size" value="20.0" />
 
 		<!-- disable ground plane filtering -->
 		<param name="filter_ground_plane" value="false" />

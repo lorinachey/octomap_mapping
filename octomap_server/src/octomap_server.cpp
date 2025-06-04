@@ -408,6 +408,10 @@ void OctomapServer::insertCloudCallback(const PointCloud2::ConstSharedPtr cloud)
     sensor_to_world_transform_stamped = tf2_buffer_->lookupTransform(
       world_frame_id_, cloud->header.frame_id, cloud->header.stamp,
       rclcpp::Duration::from_seconds(1.0));
+    // RCLCPP_INFO(this->get_logger(), "sensor_to_world_transform_stamped: %f, %f, %f",
+    //   sensor_to_world_transform_stamped.transform.translation.x,
+    //   sensor_to_world_transform_stamped.transform.translation.y,
+    //   sensor_to_world_transform_stamped.transform.translation.z);
   } catch (const tf2::TransformException & ex) {
     RCLCPP_WARN(this->get_logger(), "%s", ex.what());
     return;
@@ -530,6 +534,9 @@ void OctomapServer::insertScan(
   // all other points: free on ray, occupied on endpoint:
   for (PCLPointCloud::const_iterator it = nonground.begin(); it != nonground.end(); ++it) {
     octomap::point3d point(it->x, it->y, it->z);
+    // TODO: Lorin remove this when done debugging
+    //RCLCPP_INFO(this->get_logger(), "OCTOMAP: point: %f, %f, %f", point.x(), point.y(), point.z());
+    
     // maxrange check
     if ((max_range_ < 0.0) || ((point - sensor_origin).norm() <= max_range_) ) {
       // free cells
@@ -573,7 +580,29 @@ void OctomapServer::insertScan(
   }
 
   // now mark all occupied cells:
+  //int node_count = 0;
   for (auto it = occupied_cells.begin(), end = occupied_cells.end(); it != end; it++) {
+    // TODO: Lorin remove this when done debugging (This also seemed to be a reasonble result)
+    //octomap::point3d coord = octree_->keyToCoord(*it);
+    /*
+    [octomap_server_node-1] [INFO] [1749051950.282050266] [octomap_server]: Occupancy probability at (0.950, -0.750, 0.650): 0.970
+[octomap_server_node-1] [INFO] [1749051950.282054073] [octomap_server]: Occupancy probability at (-4.350, 0.750, 0.950): 0.970
+[octomap_server_node-1] [INFO] [1749051950.282057850] [octomap_server]: Occupancy probability at (-3.650, 0.750, 0.950): 0.970
+[octomap_server_node-1] [INFO] [1749051950.282060986] [octomap_server]: Occupancy probability at (-3.150, 0.750, 0.950): 0.970
+[octomap_server_node-1] [INFO] [1749051950.282064292] [octomap_server]: Occupancy probability at (-2.650, 0.750, 0.950): 0.970
+[octomap_server_node-1] [INFO] [1749051950.282067498] [octomap_server]: Occupancy probability at (-2.150, 0.750, 0.950): 0.970
+    */
+    // if (node_count % 10 == 0) {
+    //   auto node = octree_->search(coord);
+    //   if (node) {
+    //     RCLCPP_INFO(get_logger(), "Occupancy probability at (%.3f, %.3f, %.3f): %.3f", 
+    //                 coord.x(), coord.y(), coord.z(), node->getOccupancy());
+    //   } else {
+    //     RCLCPP_WARN(get_logger(), "Node at (%.3f, %.3f, %.3f) not found in octree!", 
+    //                 coord.x(), coord.y(), coord.z());
+    //   }
+    // }
+    // node_count++;
     octree_->updateNode(*it, true);
   }
 
