@@ -27,8 +27,7 @@
 		<param name="sensor_model.min" value="0.12" />
 		<param name="sensor_model.max" value="0.97" />  -->
 
-		<!-- disable ground plane filtering -->
-		<param name="filter_ground_plane" value="false" />
+		<param name="filter_ground_plane" value="true" />
 
 		<!-- data source to integrate (PointCloud2) -->
 		<remap from="cloud_in" to="/front_3d_lidar/lidar_points" />

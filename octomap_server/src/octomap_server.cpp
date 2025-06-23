@@ -62,7 +62,7 @@ OctomapServer::OctomapServer(const rclcpp::NodeOptions & node_options)
   using std::placeholders::_2;
 
   world_frame_id_ = declare_parameter("frame_id", "map");
-  base_frame_id_ = declare_parameter("base_frame_id", "base_footprint");
+  base_frame_id_ = declare_parameter("base_frame_id", "base_link");
   use_height_map_ = declare_parameter("use_height_map", false);
   use_colored_map_ = declare_parameter("colored_map", false);
   color_factor_ = declare_parameter("color_factor", 0.8);
