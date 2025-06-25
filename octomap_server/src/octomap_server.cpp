@@ -534,8 +534,6 @@ void OctomapServer::insertScan(
   // all other points: free on ray, occupied on endpoint:
   for (PCLPointCloud::const_iterator it = nonground.begin(); it != nonground.end(); ++it) {
     octomap::point3d point(it->x, it->y, it->z);
-    // TODO: Lorin remove this when done debugging
-    //RCLCPP_INFO(this->get_logger(), "OCTOMAP: point: %f, %f, %f", point.x(), point.y(), point.z());
     
     // maxrange check
     if ((max_range_ < 0.0) || ((point - sensor_origin).norm() <= max_range_) ) {
@@ -572,37 +570,30 @@ void OctomapServer::insertScan(
     }
   }
 
+  // TODO - LORIN changes for compatibility with the HESAI XT32 Simulated LiDAR
   // mark free cells only if not seen occupied in this cloud
   for (auto it = free_cells.begin(), end = free_cells.end(); it != end; ++it) {
-    if (occupied_cells.find(*it) == occupied_cells.end()) {
-      octree_->updateNode(*it, false);
+    
+    if (occupied_cells.find(*it) != occupied_cells.end()) {
+      continue;  // don't clear if it's being marked occupied this round
     }
+
+    const octomap::point3d coord = octree_->keyToCoord(*it);
+    const double z = coord.z();
+
+    if (z > -0.1 && z < 0.1) {
+      // Check if the voxel is already confidently occupied
+      octomap::OcTreeNode* node = octree_->search(*it);
+      if (node && node->getOccupancy() > 0.6) {
+        continue;  // skip clearing for near-floor voxels
+      }
+    }
+
+    octree_->updateNode(*it, false);  // allow clearing for other voxels
   }
 
   // now mark all occupied cells:
-  //int node_count = 0;
   for (auto it = occupied_cells.begin(), end = occupied_cells.end(); it != end; it++) {
-    // TODO: Lorin remove this when done debugging (This also seemed to be a reasonble result)
-    //octomap::point3d coord = octree_->keyToCoord(*it);
-    /*
-    [octomap_server_node-1] [INFO] [1749051950.282050266] [octomap_server]: Occupancy probability at (0.950, -0.750, 0.650): 0.970
-[octomap_server_node-1] [INFO] [1749051950.282054073] [octomap_server]: Occupancy probability at (-4.350, 0.750, 0.950): 0.970
-[octomap_server_node-1] [INFO] [1749051950.282057850] [octomap_server]: Occupancy probability at (-3.650, 0.750, 0.950): 0.970
-[octomap_server_node-1] [INFO] [1749051950.282060986] [octomap_server]: Occupancy probability at (-3.150, 0.750, 0.950): 0.970
-[octomap_server_node-1] [INFO] [1749051950.282064292] [octomap_server]: Occupancy probability at (-2.650, 0.750, 0.950): 0.970
-[octomap_server_node-1] [INFO] [1749051950.282067498] [octomap_server]: Occupancy probability at (-2.150, 0.750, 0.950): 0.970
-    */
-    // if (node_count % 10 == 0) {
-    //   auto node = octree_->search(coord);
-    //   if (node) {
-    //     RCLCPP_INFO(get_logger(), "Occupancy probability at (%.3f, %.3f, %.3f): %.3f", 
-    //                 coord.x(), coord.y(), coord.z(), node->getOccupancy());
-    //   } else {
-    //     RCLCPP_WARN(get_logger(), "Node at (%.3f, %.3f, %.3f) not found in octree!", 
-    //                 coord.x(), coord.y(), coord.z());
-    //   }
-    // }
-    // node_count++;
     octree_->updateNode(*it, true);
   }
 
@@ -1412,6 +1403,27 @@ rcl_interfaces::msg::SetParametersResult OctomapServer::onParameter(
   rcl_interfaces::msg::SetParametersResult result;
   result.successful = true;
   result.reason = "success";
+
+  // Log all parameter values
+  RCLCPP_INFO(get_logger(), "OctoMap Sensor Model Parameters:");
+  RCLCPP_INFO(get_logger(), "  max_depth:                       %ld", max_tree_depth);
+  RCLCPP_INFO(get_logger(), "  point_cloud_min_z:              %.3f", point_cloud_min_z_);
+  RCLCPP_INFO(get_logger(), "  point_cloud_max_z:              %.3f", point_cloud_max_z_);
+  RCLCPP_INFO(get_logger(), "  occupancy_min_z:                %.3f", occupancy_min_z_);
+  RCLCPP_INFO(get_logger(), "  occupancy_max_z:                %.3f", occupancy_max_z_);
+  RCLCPP_INFO(get_logger(), "  filter_speckles:                %s", filter_speckles_ ? "true" : "false");
+  RCLCPP_INFO(get_logger(), "  filter_ground_plane:            %s", filter_ground_plane_ ? "true" : "false");
+  RCLCPP_INFO(get_logger(), "  ground_filter_distance:         %.3f", ground_filter_distance_);
+  RCLCPP_INFO(get_logger(), "  ground_filter_angle:            %.3f", ground_filter_angle_);
+  RCLCPP_INFO(get_logger(), "  ground_filter_plane_distance:   %.3f", ground_filter_plane_distance_);
+  RCLCPP_INFO(get_logger(), "  sensor_model.max_range:         %.3f", max_range_);
+  RCLCPP_INFO(get_logger(), "  sensor_model.hit:               %.3f", sensor_model_hit);
+  RCLCPP_INFO(get_logger(), "  sensor_model.miss:              %.3f", sensor_model_miss);
+  RCLCPP_INFO(get_logger(), "  sensor_model.clamping_min:      %.3f", sensor_model_min);
+  RCLCPP_INFO(get_logger(), "  sensor_model.clamping_max:      %.3f", sensor_model_max);
+  RCLCPP_INFO(get_logger(), "  compress_map:                   %s", compress_map_ ? "true" : "false");
+  RCLCPP_INFO(get_logger(), "  incremental_2D_projection:      %s", incremental_2D_projection_ ? "true" : "false");
+
   return result;
 }
 
